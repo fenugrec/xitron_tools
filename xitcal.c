@@ -4,6 +4,7 @@
 */
 
 #include <errno.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include "stypes.h"
@@ -11,6 +12,20 @@
 #include "xitlib.h"
 
 #include <getopt.h>
+
+#define static_assert(x,y) _Static_assert(x, y)
+
+// validate offsets within struct eep_cal
+static_assert(offsetof(struct eep_cal, tempdata) == 0x26, "bad struct padding");
+static_assert(offsetof(struct eep_cal, extcal) == 0x36, "bad struct padding");
+static_assert(offsetof(struct eep_cal, unk_e0) == 0xe0, "bad struct padding");
+static_assert(offsetof(struct eep_cal, defaultdata) == 0xe4, "bad struct padding");
+static_assert(offsetof(struct eep_cal, password) == 0xf2, "bad struct padding");
+static_assert(offsetof(struct eep_cal, memsteps) == 0x100, "bad struct padding");
+static_assert(sizeof(struct eep_cal) == 0x18e, "bad struct size");
+
+
+
 
 /********* main stuff (options etc) */
 
