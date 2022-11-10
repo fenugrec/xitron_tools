@@ -4,6 +4,7 @@
  */
 
 #include <assert.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -14,16 +15,20 @@
 #include "xitlib.h"
 
 
-// validate offsets within struct eep_cal
+// validate offsets within eeprom structs
+static_assert(sizeof(struct memstep) == 0x0e, "bad struct size");
 static_assert(offsetof(struct eep_cal, tempdata) == 0x26, "bad struct padding");
 static_assert(offsetof(struct eep_cal, extcal) == 0x36, "bad struct padding");
 static_assert(offsetof(struct eep_cal, unk_e0) == 0xe0, "bad struct padding");
 static_assert(offsetof(struct eep_cal, defaultdata) == 0xe4, "bad struct padding");
 static_assert(offsetof(struct eep_cal, password) == 0xf2, "bad struct padding");
 static_assert(offsetof(struct eep_cal, memsteps) == 0x100, "bad struct padding");
-static_assert(sizeof(struct eep_cal) == 0x18e, "bad struct size");
+static_assert(sizeof(struct eep_cal) == 0x192, "bad struct size");
 
 
+static uint16_t reconst_16(const uint8_t *buf) {
+	return buf[0] << 8 | buf[1];
+}
 
 // hax, get file length but restore position
 u32 flen(FILE *hf) {
@@ -46,7 +51,7 @@ u32 flen(FILE *hf) {
 
 static u16 cks_1(const u8 *buf, unsigned len) {
 	u16 cks = 0xA5;
-	for (; len > 0; len -= 2) {
+	for (; len > 0; len -= 1) {
 		cks += *buf;
 		buf += 1;
 	}
@@ -54,12 +59,30 @@ static u16 cks_1(const u8 *buf, unsigned len) {
 }
 
 
+/** ret 1 if good checksum
+ * @param len of data excluding cks
+ * @param buf should have sizeof(data)+2
+ */
+static bool check_block(const u8 *buf, unsigned len) {
+	u16 cks = cks_1(buf, len);
+	u16 want = reconst_16(&buf[len]);
+
+	if (cks == want) {
+		return 1;
+	}
+	printf("cks: want %X, got %X\n", (unsigned) want, (unsigned) cks);
+	return 0;
+}
+
 void parse_eepdump(FILE *i_file) {
 	u32 file_len;
 
+	assert(i_file);
+
 	rewind(i_file);
 	file_len = flen(i_file);
-	if (file_len >= EEPSIZE) {
+	if ((file_len >= EEPSIZE) ||
+			(file_len < sizeof(struct eep_cal))){
 		printf("wrong dump size (%lu bytes)\n", (unsigned long) file_len);
 		return;
 	}
@@ -77,6 +100,12 @@ void parse_eepdump(FILE *i_file) {
 		return;
 	}
 
+	struct eep_cal eepcal;
+	memcpy(&eepcal, src, sizeof(struct eep_cal));
+
+	if (!check_block(src, sizeof(eepcal.equations))) {
+		printf("bad CKS : eq\n");
+	}
 	free(src);
 	return;
 }

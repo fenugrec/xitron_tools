@@ -10,6 +10,10 @@
 #include "stypes.h"
 
 /********** eeprom contents *****/
+struct memstep {
+	u8 ms_data[0x0c];
+	u8 ms_cks[2];
+} __attribute__((packed));
 
 struct eep_cal {
 	u8 equations[0x24];
@@ -30,8 +34,10 @@ struct eep_cal {
 	u8 password[0x0c];
 	u8 password_cks[2];
 
-	u8 memsteps[0x8c];
-	u8 memsteps_cks[2];
+	struct memstep memsteps[10];
+
+	u8 defaults[4];
+	u8 defaults_cks[2];
 } __attribute__((packed));
 
 
