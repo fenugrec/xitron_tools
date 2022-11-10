@@ -74,6 +74,17 @@ static bool check_block(const u8 *buf, unsigned len) {
 	return 0;
 }
 
+#define CHECK_ONE_BLOCK(eepcal, member) \
+	check_block((u8 *)(eepcal)+offsetof(struct eep_cal, member), sizeof(((struct eep_cal *)0)->member))
+
+#define QUOTE(seq) ""#seq""
+
+#define CHECK_BLOCK_P(eepcal, member) do {\
+		if (!CHECK_ONE_BLOCK(eepcal, member)) { \
+			printf("bad cks in block \"" QUOTE(member) "\".\n"); \
+		} \
+	} while (0)
+
 void parse_eepdump(FILE *i_file) {
 	u32 file_len;
 
@@ -103,9 +114,22 @@ void parse_eepdump(FILE *i_file) {
 	struct eep_cal eepcal;
 	memcpy(&eepcal, src, sizeof(struct eep_cal));
 
-	if (!check_block(src, sizeof(eepcal.equations))) {
-		printf("bad CKS : eq\n");
+	CHECK_BLOCK_P(&eepcal, equations);
+	CHECK_BLOCK_P(&eepcal, tempdata);
+	CHECK_BLOCK_P(&eepcal, extcal);
+	CHECK_BLOCK_P(&eepcal, unk_e0);
+	CHECK_BLOCK_P(&eepcal, defaultdata);
+	CHECK_BLOCK_P(&eepcal, password);	// no custom password results in bad cks
+
+	// pain because of array-of-structs
+	unsigned ms_idx;
+	for (ms_idx = 0; ms_idx < MEMSTEPS; ms_idx++) {
+		if (!check_block(eepcal.memsteps[ms_idx].ms_data, sizeof(((struct memstep *)0)->ms_data))) {
+			printf("(not fatal) bad cks in memstep %u\n", ms_idx);
+		}
 	}
+	CHECK_BLOCK_P(&eepcal, defaults);
+
 	free(src);
 	return;
 }

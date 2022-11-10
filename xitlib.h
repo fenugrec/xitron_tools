@@ -15,6 +15,8 @@ struct memstep {
 	u8 ms_cks[2];
 } __attribute__((packed));
 
+#define MEMSTEPS 10
+
 struct eep_cal {
 	u8 equations[0x24];
 	u8 eq_cks[2];
@@ -25,7 +27,7 @@ struct eep_cal {
 	u8 extcal[0xa8];
 	u8 extcal_cks[2];
 
-	u8 unk_e0[0x02];	//possibly baud rate
+	u8 unk_e0[0x02];	//[0] : gpib address, [1] baudrate (enum)
 	u8 unk_e0_cks[2];
 
 	u8 defaultdata[0x0c];
@@ -34,7 +36,7 @@ struct eep_cal {
 	u8 password[0x0c];
 	u8 password_cks[2];
 
-	struct memstep memsteps[10];
+	struct memstep memsteps[MEMSTEPS];
 
 	u8 defaults[4];
 	u8 defaults_cks[2];
