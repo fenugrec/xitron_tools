@@ -132,6 +132,19 @@ The input is processes by readmath and split on , and space before using this fu
 ;#cmdMode V_meas V
 ;#cmdMode T_meas C
 
+#cmdSetup comboboxhot Thermocouple type
+:write: SET:TCtype
+:read:
+Type_B B
+Type_E E
+Type_J J
+Type_K K
+Type_N N
+Type_R R
+Type_S S
+Type_T T
+
+
 ;*************************************** synthetic SCPI commands
 
 #scpiCmd value? txrx? @
@@ -142,8 +155,10 @@ The input is processes by readmath and split on , and space before using this fu
 #scpiCmd SET:imode tx K00AS
 #scpiCmd SET:tmode tx K00CS
 
-;#scpiCmd set_v tx K00VS
-#scpiCmd set_v tx ("K00"+formatSI(value)+"VS")
+
+#scpiCmd SET:V tx ("K00"+formatSI(value)+"VS")
+
+#scpiCmd SET:TCtype tx ("T"+value)
 
 
 ;*************************************** setup stuff
@@ -156,21 +171,8 @@ T T_generate.
 
 ;*************************************** totally broken
 
-
-;doesn't work; should simply send "T<type>" e.g. TB, TE, TK etc.
 ;Do I need one #scpiCmd for each ??
 
-#cmdSetup comboboxhot Thermocouple type
-:write: tx T 1
-:read:
-Type_B B
-Type_E E
-Type_J J
-Type_K K
-Type_N N
-Type_R R
-Type_S S
-Type_T T
 
 
 ; Setup menu functions
