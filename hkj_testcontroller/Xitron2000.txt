@@ -108,7 +108,7 @@ The input is processes by readmath and split on , and space before using this fu
 ; Final command to meter before breaking connection
 #finalCmd
 
-#outputOff cmd_standby
+#outputOff SET:STANDBY
 
 ;*************************************** mode selection 
 
@@ -129,7 +129,10 @@ The input is processes by readmath and split on , and space before using this fu
 ;*************************************** synthetic SCPI commands
 
 #scpiCmd READ:DISP? txrx? @
-#scpiCmd cmd_standby tx S
+
+#scpiCmd SET:STANDBY tx S
+#scpiCmd SET:ACTIVE tx O
+
 
 ; gross : to change mode, disable 'calculated mode', output to 0<unit>, and Standby mode
 #scpiCmd SET:vmode tx K00VS
