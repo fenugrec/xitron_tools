@@ -1,4 +1,4 @@
-#notes
+﻿#notes
 Basic support for Xitron 2000I/M calibrators.
  - doesn't implement Measure mode yet
  - only tested with the RS232 option.
@@ -22,7 +22,9 @@ Basic support for Xitron 2000I/M calibrators.
 ; - doesn't like explicit '+' sign, but still accepts it ?
 ; - contrary to docs, instrument doesn't send a space before replying to a '@' query. See examples below
 ;
-; (general docs for this file : https://lygte-info.dk/project/TestControllerConfigDevice%20UK.html )
+; (general docs for device files: https://lygte-info.dk/project/TestControllerConfigDevice%20UK.html )
+; This file has a UTF8 BOM.
+;
 ; to debug string ops : open calculator popup :
 ; - enter "var value="+1.000mVSTBY",
 ; - then e.g. "getMatchGroup(value, "[ um]([VACF])",1)"
@@ -183,20 +185,21 @@ Type_T T
 :tip: Setup this voltage, do not turn output on/off
 Volt -22 22
 
-; XXX TODO : limits change depending on simulated TC type
-#cmdSetup number Temperature
-:read: READ:DISP?
-:readformat: su
-:write: SET:T
-:tip: Setup this voltage, do not turn output on/off
-Volt -270 1820
-
 #cmdSetup number Current
 :read: READ:DISP?
 :readformat: fu
 :write: SET:I
 :tip: Setup this current, do not turn output on/off
 Amps -22m 22m
+
+; XXX TODO : limits change depending on simulated TC type
+#cmdSetup number Temperature
+:read: READ:DISP?
+:readformat: su
+:write: SET:T
+:tip: Setup this voltage, do not turn output on/off
+°C -270 1820
+
 
 
 ;*************************************** totally broken
@@ -209,6 +212,4 @@ Amps -22m 22m
 :updatealloff:
 Off 0
 On 1
-
-
 
