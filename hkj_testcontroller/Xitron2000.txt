@@ -144,8 +144,8 @@ The input is processes by readmath and split on , and space before using this fu
 
 
 #scpiCmd SET:V tx ("K00"+formatSI((value))+"VS")
-
 #scpiCmd SET:I tx ("K00"+formatSI((value))+"AS")
+#scpiCmd SET:T tx ("K00"+formatSI((value))+"CS")
 
 #scpiCmd SET:TCtype tx ("T"+value)
 
@@ -171,15 +171,33 @@ Type_R R
 Type_S S
 Type_T T
 
+#cmdSetup number Voltage
+:read: value?
+:readformat: fu
+:write: SET:V
+:tip: Setup this voltage, do not turn output on/off
+Volt -22 22
+
+; XXX TODO : tempere limits change depending on simulated TC type
+#cmdSetup number Temperature
+:read: value?
+:readformat: fu
+:write: SET:T
+:tip: Setup this voltage, do not turn output on/off
+Volt -270 1820
+
+#cmdSetup number Current
+:read: value?
+:readformat: fu
+:write: SET:I
+:tip: Setup this current, do not turn output on/off
+Amps -22m 22m
+
 
 ;*************************************** totally broken
 
-;Do I need one #scpiCmd for each ??
-
-
-
 ; Setup menu functions
-; The parameters on the first line is: type name page 
+; The parameters on the first line is: "#cmdSetup controlType name {page}"
 ; Settings on the following lines are:
 ; read: SCPI to read value from device, is used to synchronize when opening setup page or setting equal named fields. Not always used
 ; readformat: Parse read value.
@@ -187,7 +205,7 @@ Type_T T
 ; tip: Add this tip to all components for this input field.
 
 
-#cmdSetup buttonsOn Output Output_1
+#cmdSetup buttonsOn Output
 ;:read:
 :write: O
 :tip: Turn output on or off
@@ -196,18 +214,4 @@ Off 0
 On 1
 
 
-#cmdSetup number Voltage
-:read: value?
-:readformat: fu
-:write: SET:V
-:tip: Setup this voltage, do not turn output on/off
-Volt -22 22
-
-
-#cmdSetup number Current
-:read: value?
-:readformat: fu
-:write: SET:I
-:tip: Setup this current, do not turn output on/off
-Amps -22m 22m
 
