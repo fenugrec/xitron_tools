@@ -75,7 +75,7 @@ Basic support for Xitron 2000I/M calibrators.
 ; How to poll for data, this is used for table and #values?
 ; a #askMode, #cmdMode and #prepareSample is used before this is string is used.
 ; This is a single line command
-#askValues value?
+#askValues READ:DISP?
 
 ; Format of answer: f=float, u=remove trailing letters, x=skip, s=number with optional SI prefix
 The input is processes by readmath and split on , and space before using this function.
@@ -134,7 +134,7 @@ The input is processes by readmath and split on , and space before using this fu
 
 ;*************************************** synthetic SCPI commands
 
-#scpiCmd value? txrx? @
+#scpiCmd READ:DISP? txrx? @
 #scpiCmd cmd_standby tx S
 
 ; gross : to change mode, disable 'calculated mode', output to 0<unit>, and Standby mode
@@ -172,22 +172,22 @@ Type_S S
 Type_T T
 
 #cmdSetup number Voltage
-:read: value?
-:readformat: fu
+:read: READ:DISP?
+:readformat: su
 :write: SET:V
 :tip: Setup this voltage, do not turn output on/off
 Volt -22 22
 
 ; XXX TODO : tempere limits change depending on simulated TC type
 #cmdSetup number Temperature
-:read: value?
-:readformat: fu
+:read: READ:DISP?
+:readformat: su
 :write: SET:T
 :tip: Setup this voltage, do not turn output on/off
 Volt -270 1820
 
 #cmdSetup number Current
-:read: value?
+:read: READ:DISP?
 :readformat: fu
 :write: SET:I
 :tip: Setup this current, do not turn output on/off
