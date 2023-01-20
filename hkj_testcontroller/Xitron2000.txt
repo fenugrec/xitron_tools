@@ -139,9 +139,9 @@ The input is processes by readmath and split on , and space before using this fu
 #scpiCmd SET:tmode tx K00CS
 
 
-#scpiCmd SET:V tx ("K00"+formatSI((value))+"VS")
-#scpiCmd SET:I tx ("K00"+formatSI((value))+"AS")
-#scpiCmd SET:T tx ("K00"+formatSI((value))+"CS")
+#scpiCmd SET:V tx ("K00"+formatSI((value))+"V")
+#scpiCmd SET:I tx ("K00"+formatSI((value))+"A")
+#scpiCmd SET:T tx ("K00"+formatSI((value))+"C")
 
 #scpiCmd SET:TCtype tx ("T"+value)
 
@@ -181,14 +181,14 @@ Type_T T
 :read: READ:DISP?
 :readformat: su
 :write: SET:V
-:tip: Setup this voltage, do not turn output on/off
+:tip: Setup this voltage, does not change output state
 Volt -22 22
 
 #cmdSetup number Current
 :read: READ:DISP?
-:readformat: fu
+:readformat: su
 :write: SET:I
-:tip: Setup this current, do not turn output on/off
+:tip: Setup this current, does not change output state
 Amps -22m 22m
 
 ; XXX TODO : limits change depending on simulated TC type
