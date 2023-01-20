@@ -122,7 +122,6 @@ The input is processes by readmath and split on , and space before using this fu
 ; First parameter must match a #value (4 parameter) and second parameter must match what #askMode returns
 ; First parameter is also used in shortcut menu
 
-; gross : to change mode, disable 'calculated mode', output to 0<unit>, and set Standby
 #cmdMode V_generate V SET:vmode
 
 #cmdMode I_generate A SET:imode
@@ -131,18 +130,6 @@ The input is processes by readmath and split on , and space before using this fu
 
 ;#cmdMode V_meas V
 ;#cmdMode T_meas C
-
-#cmdSetup comboboxhot Thermocouple type
-:write: SET:TCtype
-:read:
-Type_B B
-Type_E E
-Type_J J
-Type_K K
-Type_N N
-Type_R R
-Type_S S
-Type_T T
 
 
 ;*************************************** synthetic SCPI commands
@@ -168,6 +155,20 @@ Type_T T
 V V_generate.
 I I_generate.
 T T_generate.
+
+
+#cmdSetup comboboxhot Thermocouple type
+:write: SET:TCtype
+:read:
+Type_B B
+Type_E E
+Type_J J
+Type_K K
+Type_N N
+Type_R R
+Type_S S
+Type_T T
+
 
 ;*************************************** totally broken
 
