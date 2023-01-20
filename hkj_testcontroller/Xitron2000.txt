@@ -123,16 +123,11 @@ The input is processes by readmath and split on , and space before using this fu
 ; First parameter is also used in shortcut menu
 
 ; gross : to change mode, disable 'calculated mode', output to 0<unit>, and set Standby
-#cmdMode V_generate V
-set_Vmode
-;tx K00VS
+#cmdMode V_generate V SET:vmode
 
-#cmdMode I_generate A
-set_Imode
-;tx K00AS
+#cmdMode I_generate A SET:imode
 
-#cmdMode T_generate C
-tx K00CS
+#cmdMode T_generate C SET:tmode
 
 ;#cmdMode V_meas V
 ;#cmdMode T_meas C
@@ -143,9 +138,9 @@ tx K00CS
 #scpiCmd cmd_standby tx S
 
 ; gross : to change mode, disable 'calculated mode', output to 0<unit>, and Standby mode
-#scpiCmd set_Vmode tx K00VS
-#scpiCmd set_Imode tx K00AS
-;#scpiCmd set_Tmode tx K00CS
+#scpiCmd SET:vmode tx K00VS
+#scpiCmd SET:imode tx K00AS
+#scpiCmd SET:tmode tx K00CS
 
 ;#scpiCmd set_v tx K00VS
 #scpiCmd set_v tx ("K00"+formatSI(value)+"VS")
