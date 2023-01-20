@@ -124,10 +124,12 @@ The input is processes by readmath and split on , and space before using this fu
 
 ; gross : to change mode, disable 'calculated mode', output to 0<unit>, and set Standby
 #cmdMode V_generate V
-tx K00VS
+set_Vmode
+;tx K00VS
 
 #cmdMode I_generate A
-tx K00AS
+set_Imode
+;tx K00AS
 
 #cmdMode T_generate C
 tx K00CS
@@ -141,11 +143,13 @@ tx K00CS
 #scpiCmd cmd_standby tx S
 
 ; gross : to change mode, disable 'calculated mode', output to 0<unit>, and Standby mode
-;#scpiCmd set_Vmode tx K00VS
-;#scpiCmd set_Imode tx K00AS
+#scpiCmd set_Vmode tx K00VS
+#scpiCmd set_Imode tx K00AS
 ;#scpiCmd set_Tmode tx K00CS
 
-#scpiCmd set_v tx K00VS
+;#scpiCmd set_v tx K00VS
+#scpiCmd set_v tx ("K00"+formatSI(value)+"VS")
+
 
 ;*************************************** setup stuff
 #cmdSetup selector Mode_settings
