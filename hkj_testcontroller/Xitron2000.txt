@@ -1,10 +1,21 @@
-; basic support for Xitron 2000I/M calibrators.
-; - doesn't implement Measure mode yet
-; - only tested with the RS232 option.
-; - The unit needs RTS/CTS flow ctl : at least loopback (may need extra delays), ideally wired properly.
-; - IEEE488/GPIB should support the same commands; not sure how to support both with one file.
+#notes
+Basic support for Xitron 2000I/M calibrators.
+ - doesn't implement Measure mode yet
+ - only tested with the RS232 option.
+ - The unit needs RTS/CTS flow ctl : at least loopback (may need extra delays), ideally wired properly.
+
+#idString Xitron, 2000,
+#name Xitron/Vitrek 2000
+#handle XITRON2000
+#port com
+#driver ascii
+#eol \r\n
+
+#author fenugrec
+
 
 ; protocol particularities:
+; - IEEE488/GPIB should support the same commands; not sure how to support both with one file.
 ; - cannot reliably query current mode (display string is identical in Operate and Measure modes)
 ; - only STBY mode has an indication on the display
 ; - no idn query or similar
@@ -13,14 +24,6 @@
 ;
 ; (general docs for this file : https://lygte-info.dk/project/TestControllerConfigDevice%20UK.html )
 
-#idString Xitron, 2000, 
-#name Xitron/Vitrek 2000
-#handle XITRON2000
-#port com
-#driver ascii
-#eol \r\n
-
-#author fenugrec
 
 ;  column name,  unit, formatter (SI, Time, Int, D0..D6), selector
 #value VoltageSet V si V_generate
