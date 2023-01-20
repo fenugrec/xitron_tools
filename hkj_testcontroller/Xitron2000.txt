@@ -79,7 +79,8 @@ Basic support for Xitron 2000I/M calibrators.
 
 ; Format of answer: f=float, u=remove trailing letters, x=skip, s=number with optional SI prefix
 The input is processes by readmath and split on , and space before using this function.
-#askValuesReadFormat sxx
+; we would like something like a regex [ ]?(.*)[ um][VACF].*
+#askValuesReadFormat suuuu
 
 
 ; Accept this delay when reading values (seconds)
@@ -91,9 +92,10 @@ The input is processes by readmath and split on , and space before using this fu
 ; Switch meter to this mode during start, leave empty to avoid any switching
 #initialMode 
 
-; String to ask about actual meter mode, 
-; This is a single line command
-#askMode 
+; String to ask about actual meter mode, from display string
+#askMode READ:DISP?
+#askModeMathFormat getMatchGroup(value, "[ um]([VACF])",1)
+#modeFromValue getMatchGroup(value, "[ um]([VACF])",1)
 
 ; When one of these commands are used through the command interface a new configuration will be done before using #askMode
 ; Only one word for each #mayModifyMode
@@ -127,9 +129,6 @@ The input is processes by readmath and split on , and space before using this fu
 #cmdMode I_generate A SET:imode
 
 #cmdMode T_generate C SET:tmode
-
-;#cmdMode V_meas V
-;#cmdMode T_meas C
 
 
 ;*************************************** synthetic SCPI commands
