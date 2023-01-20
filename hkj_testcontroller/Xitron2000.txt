@@ -143,7 +143,9 @@ The input is processes by readmath and split on , and space before using this fu
 #scpiCmd SET:tmode tx K00CS
 
 
-#scpiCmd SET:V tx ("K00"+formatSI(value)+"VS")
+#scpiCmd SET:V tx ("K00"+formatSI((value))+"VS")
+
+#scpiCmd SET:I tx ("K00"+formatSI((value))+"AS")
 
 #scpiCmd SET:TCtype tx ("T"+value)
 
@@ -194,18 +196,18 @@ Off 0
 On 1
 
 
-#cmdSetup number Voltage vset
+#cmdSetup number Voltage
 :read: value?
 :readformat: fu
-:write: set_v vset
+:write: SET:V
 :tip: Setup this voltage, do not turn output on/off
 Volt -22 22
 
 
-#cmdSetup number Current Output_1
+#cmdSetup number Current
 :read: value?
 :readformat: fu
-:write: set_i iset
+:write: SET:I
 :tip: Setup this current, do not turn output on/off
 Amps -22m 22m
 
