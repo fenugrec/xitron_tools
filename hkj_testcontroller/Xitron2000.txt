@@ -3,6 +3,7 @@ Basic support for Xitron 2000I/M calibrators.
  - doesn't implement Measure mode yet
  - only tested with the RS232 option.
  - The unit needs RTS/CTS flow ctl : at least loopback (may need extra delays), ideally wired properly.
+ - °F not implemented, on purpose.
 
 #idString Xitron, 2000,
 #name Xitron/Vitrek 2000
@@ -34,10 +35,6 @@ Basic support for Xitron 2000I/M calibrators.
 #value VoltageSet V si V_generate
 #value CurrentSet A si I_generate
 #value TempSet ° X2 T_generate
-
-; TODO : measure (only V/Temp)
-;#value VoltageMeasure V si V_meas
-;#value TempMeasure ° X2 T_meas
 
 
 ; @ : "the instrument responds by sending a single space character [** Nope !! **],
@@ -166,7 +163,7 @@ I I_generate.
 T T_generate.
 
 
-#cmdSetup comboboxhot Thermocouple type
+#cmdSetup comboboxhot Thermocouple
 :write: SET:TCtype
 :read:
 Type_B B
