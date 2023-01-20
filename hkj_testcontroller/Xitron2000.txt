@@ -1,0 +1,206 @@
+; basic support for Xitron 2000I/M calibrators.
+; - doesn't implement Measure mode yet
+; - only tested with the RS232 option.
+; - The unit needs RTS/CTS flow ctl : at least loopback (may need extra delays), ideally wired properly.
+; - IEEE488/GPIB should support the same commands; not sure how to support both with one file.
+
+; protocol particularities:
+; - cannot reliably query current mode (display string is identical in Operate and Measure modes)
+; - only STBY mode has an indication on the display
+; - no idn query or similar
+; - doesn't like explicit '+' sign, but still accepts it ?
+; - contrary to docs, instrument doesn't send a space before replying to a '@' query. See examples below
+;
+; (general docs for this file : https://lygte-info.dk/project/TestControllerConfigDevice%20UK.html )
+
+#idString Xitron, 2000, 
+#name Xitron/Vitrek 2000
+#handle XITRON2000
+#port com
+#driver ascii
+#eol \r\n
+
+#author fenugrec
+
+;  column name,  unit, formatter (SI, Time, Int, D0..D6), selector
+#value VoltageSet V si V_generate
+#value CurrentSet A si I_generate
+#value TempSet ° X2 T_generate
+
+; TODO : measure (only V/Temp)
+;#value VoltageMeasure V si V_meas
+;#value TempMeasure ° X2 T_meas
+
+
+; @ : "the instrument responds by sending a single space character [** Nope !! **],
+; followed by the 16 character display string, and terminating by CR + LF "
+;
+; Example actual return strings for '@' query: (string is terminated with \r\n)
+; "+100.0000mV STBY"
+; "+.1000000 V STBY"
+; " -2.00000mV STBY"
+; "-2.000000 V STBY"
+; 
+; "+2.000000mA STBY"
+; "+.0000000 A STBY"
+; "-1.000000mA STBY"
+; "-.0010000 A STBY"
+; "+12.00000uA STBY"
+; "-12.00000uA STBY"
+; " -2.00000uA STBY"
+; 
+; In the following, "K" is thermocouple type. Could be one of [BEJKNERST]
+; "   +0.00 C KSTBY"
+; "   -1.00 C KSTBY"
+; "  +30.20 F KSTBY"
+; "  -30.20 F KSTBY"
+; 
+; "Operate" (output on) : similar, more space padding, "STBY" not shown
+; 
+; "  -30.20 F K    "
+; "  -34.55 C K    "
+; " +3.00000mA     "
+; "   +10.00uV     "
+; " +23.0000mV     "
+; 
+; "Measure", i.e. acting like a DMM :
+; "+.0534194 V     "
+; " +829.40 C J    "
+; and so on.
+
+
+; How to poll for data, this is used for table and #values?
+; a #askMode, #cmdMode and #prepareSample is used before this is string is used.
+; This is a single line command
+#askValues value?
+
+; Format of answer: f=float, u=remove trailing letters, x=skip, s=number with optional SI prefix
+The input is processes by readmath and split on , and space before using this function.
+#askValuesReadFormat sxx
+
+
+; Accept this delay when reading values (seconds)
+;#readingDelay 2
+
+; Mode change have a longer delay on reading values (seconds)
+;#modeChangeDelay 10
+
+; Switch meter to this mode during start, leave empty to avoid any switching
+#initialMode 
+
+; String to ask about actual meter mode, 
+; This is a single line command
+#askMode 
+
+; When one of these commands are used through the command interface a new configuration will be done before using #askMode
+; Only one word for each #mayModifyMode
+; Specify command without initial colon and in the shortest possible form
+;#mayModifyMode 
+
+
+; Prepare the meter to response to #askValues
+#prepareSample
+
+
+; Initial commands to meter when establishing connection
+#initCmd
+
+; Final command to meter before breaking connection
+#finalCmd
+
+#outputOff cmd_standby
+
+;*************************************** mode selection 
+
+; col row
+#cmdModeLayout 2 3
+
+; Strings to configure device in different modes
+; First parameter must match a #value (4 parameter) and second parameter must match what #askMode returns
+; First parameter is also used in shortcut menu
+
+; gross : to change mode, disable 'calculated mode', output to 0<unit>, and set Standby
+#cmdMode V_generate V
+tx K00VS
+
+#cmdMode I_generate A
+tx K00AS
+
+#cmdMode T_generate C
+tx K00CS
+
+;#cmdMode V_meas V
+;#cmdMode T_meas C
+
+;*************************************** synthetic SCPI commands
+
+#scpiCmd value? txrx? @
+#scpiCmd cmd_standby tx S
+
+; gross : to change mode, disable 'calculated mode', output to 0<unit>, and Standby mode
+;#scpiCmd set_Vmode tx K00VS
+;#scpiCmd set_Imode tx K00AS
+;#scpiCmd set_Tmode tx K00CS
+
+#scpiCmd set_v tx K00VS
+
+;*************************************** setup stuff
+#cmdSetup selector Mode_settings
+;:read:
+:updatemodechange:
+V V_generate.
+I I_generate.
+T T_generate.
+
+;*************************************** totally broken
+
+
+;doesn't work; should simply send "T<type>" e.g. TB, TE, TK etc.
+;Do I need one #scpiCmd for each ??
+
+#cmdSetup comboboxhot Thermocouple type
+:write: tx T 1
+:read:
+Type_B B
+Type_E E
+Type_J J
+Type_K K
+Type_N N
+Type_R R
+Type_S S
+Type_T T
+
+
+; Setup menu functions
+; The parameters on the first line is: type name page 
+; Settings on the following lines are:
+; read: SCPI to read value from device, is used to synchronize when opening setup page or setting equal named fields. Not always used
+; readformat: Parse read value.
+; write: Send the value to device, this field is used in combination with data fields in the details to send updates to device.
+; tip: Add this tip to all components for this input field.
+
+
+#cmdSetup buttonsOn Output Output_1
+;:read:
+:write: O
+:tip: Turn output on or off
+:updatealloff:
+Off 0
+On 1
+
+
+#cmdSetup number Voltage vset
+:read: value?
+:readformat: fu
+:write: set_v vset
+:tip: Setup this voltage, do not turn output on/off
+Volt -22 22
+
+
+#cmdSetup number Current Output_1
+:read: value?
+:readformat: fu
+:write: set_i iset
+:tip: Setup this current, do not turn output on/off
+Amps -22m 22m
+
