@@ -23,6 +23,9 @@ Basic support for Xitron 2000I/M calibrators.
 ; - contrary to docs, instrument doesn't send a space before replying to a '@' query. See examples below
 ;
 ; (general docs for this file : https://lygte-info.dk/project/TestControllerConfigDevice%20UK.html )
+; to debug string ops : open calculator popup :
+; - enter "var value="+1.000mVSTBY",
+; - then e.g. "getMatchGroup(value, "[ um]([VACF])",1)"
 
 
 ;  column name,  unit, formatter (SI, Time, Int, D0..D6), selector
@@ -40,27 +43,20 @@ Basic support for Xitron 2000I/M calibrators.
 ;
 ; Example actual return strings for '@' query: (string is terminated with \r\n)
 ; "+100.0000mV STBY"
-; "+.1000000 V STBY"
 ; " -2.00000mV STBY"
 ; "-2.000000 V STBY"
 ; 
-; "+2.000000mA STBY"
 ; "+.0000000 A STBY"
 ; "-1.000000mA STBY"
-; "-.0010000 A STBY"
 ; "+12.00000uA STBY"
-; "-12.00000uA STBY"
-; " -2.00000uA STBY"
 ; 
 ; In the following, "K" is thermocouple type. Could be one of [BEJKNERST]
 ; "   +0.00 C KSTBY"
 ; "   -1.00 C KSTBY"
 ; "  +30.20 F KSTBY"
-; "  -30.20 F KSTBY"
 ; 
 ; "Operate" (output on) : similar, more space padding, "STBY" not shown
 ; 
-; "  -30.20 F K    "
 ; "  -34.55 C K    "
 ; " +3.00000mA     "
 ; "   +10.00uV     "
@@ -150,6 +146,16 @@ The input is processes by readmath and split on , and space before using this fu
 
 
 ;*************************************** setup stuff
+
+; Setup menu functions
+; The parameters on the first line is: "#cmdSetup controlType name {page}"
+; Settings on the following lines are:
+; read: SCPI to read value from device, is used to synchronize when opening setup page or setting equal named fields. Not always used
+; readformat: Parse read value.
+; write: Send the value to device, this field is used in combination with data fields in the details to send updates to device.
+; tip: Add this tip to all components for this input field.
+
+
 #cmdSetup selector Mode_settings
 ;:read:
 :updatemodechange:
@@ -177,7 +183,7 @@ Type_T T
 :tip: Setup this voltage, do not turn output on/off
 Volt -22 22
 
-; XXX TODO : tempere limits change depending on simulated TC type
+; XXX TODO : limits change depending on simulated TC type
 #cmdSetup number Temperature
 :read: READ:DISP?
 :readformat: su
@@ -194,14 +200,6 @@ Amps -22m 22m
 
 
 ;*************************************** totally broken
-
-; Setup menu functions
-; The parameters on the first line is: "#cmdSetup controlType name {page}"
-; Settings on the following lines are:
-; read: SCPI to read value from device, is used to synchronize when opening setup page or setting equal named fields. Not always used
-; readformat: Parse read value.
-; write: Send the value to device, this field is used in combination with data fields in the details to send updates to device.
-; tip: Add this tip to all components for this input field.
 
 
 #cmdSetup buttonsOn Output
