@@ -1,4 +1,4 @@
-/* collection of funcs for working with HP 8643A ROMs
+/* collection of funcs for working with Xitron 2000 EEPROM dump
  * (c) fenugrec 2022
  * GPLv3
  */

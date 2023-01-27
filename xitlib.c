@@ -1,4 +1,4 @@
-/* collection of funcs for working with Tektronix TDS7xx ROMs (5xx/6xx probably also)
+/* collection of funcs for working with Xitron 2000 EEPROM dumps
  * (c) fenugrec 2018
  * GPLv3
  */
